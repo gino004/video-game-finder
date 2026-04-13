@@ -1,15 +1,33 @@
 body {
  font-family: Arial, sans-serif;
  padding: 20px;
+ background-color: #121212;
+ color: white;
 }
 
 input {
- padding: 8px;
- margin-right: 10px;
+ padding: 10px;
+ border-radius: 8px;
+ border: none;
 }
 
 button {
- padding: 8px;
+ padding: 10px 15px;
+ border-radius: 8px;
+ border: none;
+ background-color: #1e90ff;
+ color: white;
+ cursor: pointer;
+ transition: 0.3s;
+}
+
+button:hover {
+ background-color: #0f6cd1;
+}
+
+h1 {
+ text-align: center;
+ margin-bottom: 20px;
 }
 
 #results {
@@ -20,10 +38,21 @@ button {
 }
 
 .game-card {
- border: 1px solid #ccc;
- border-radius: 10px;
+ border-radius: 12px;
  padding: 10px;
+ background-color: #1e1e1e;
  text-align: center;
+ transition: transform 0.3s, box-shadow 0.3s;
+ cursor: pointer;
+}
+
+.game-card {
+ animation: fadeIn 0.5s ease-in;
+}
+
+.game-card:hover {
+ transform: scale(1.05);
+ box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
 }
 
 .game-card img {
@@ -33,15 +62,33 @@ button {
 
 .game-detail {
  text-align: center;
+ animation: fadeIn 0.5s ease-in;
 }
 
 .game-detail img {
  width: 300px;
  border-radius: 10px;
+ margin: 10px 0;
 }
 
 #backBtn {
  margin-top: 20px;
  padding: 10px;
  cursor: pointer;
+}
+
+@keyframes fadeIn {
+ from {
+  opacity: 0;
+  transform: translateY(10px);
+ }
+
+ to {
+  opacity: 1;
+  transform: translateY(0);
+ }
+}
+
+#favBtn:hover {
+ transform: scale(1.1);
 }
