@@ -10,15 +10,17 @@
 				platform that helps users quickly find games with a detailed main 
 				description, providing a brief summary and rating for each game." />
 	<link rel="stylesheet" href="/src/style.css" />
+	<link rel="icon" href="public/favicon.ico" />
 </head>
 
 <body>
-	<h1>Video Game Finder</h1>
-
-	<input type="text" id="searchInput" placeholder="Search a game..." />
-	<button id="searchBtn">Search</button>
- <button id="showFavs">❤️ Favorites</button>
+	<button id="showFavs" class="fav-floating">❤️</button>
+	<div class="home">
+		<h1>Video Game Finder</h1>
+		<input type="text" id="searchInput" placeholder="Search a game..." />
+	</div>
 	<div id="results"></div>
+	<div id="gameDetail"></div>
 	<script type="module" src="/src/main.js"></script>
 </body>
 

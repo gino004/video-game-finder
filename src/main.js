@@ -1,24 +1,31 @@
 const searchInput = document.getElementById("searchInput");
-const searchBtn = document.getElementById("searchBtn");
-const results = document.getElementById("results");
 const showFavsBtn = document.getElementById("showFavs");
+const home = document.querySelector(".home");
+const results = document.getElementById("results");
+let isFavoritesView = false;
+
 
 const API_KEY = "7676cc6e804b48e8909d178e064fbc97"; //	RAWG API key (replace with your own if needed)
 let lastGames = []; //	Store last search results for easy navigation back from details view
 
 async function searchGames() {
 	const query = searchInput.value.trim();
+	console.log("searchGames running");
 
 	if (!query) {
+		isFavoritesView = false; //	Reset favorites view flag when performing a new search
 		alert("Please enter a game name");
-		return;
+		return; //		If input is empty, show alert and exit function
 	}
+
+	home.classList.add("search-mode");
 
 	const url = `https://api.rawg.io/api/games?key=${API_KEY}&search=${query}`;
 
 	try {
 		const response = await fetch(url);
 		const data = await response.json();
+
 		lastGames = data.results;
 		displayGames(lastGames);
 	} catch (error) {
@@ -26,11 +33,11 @@ async function searchGames() {
 	}
 }
 
-searchBtn.addEventListener("click", searchGames); //	Search on button click
-showFavsBtn.addEventListener("click", showFavorites); //	Show favorites on button click
+searchInput.addEventListener("keypress", (e) => { //	Detect Enter key press in search input to trigger search
+	console.log("tecla:", e.key);
 
-searchInput.addEventListener("keypress", (e) => {
 	if (e.key === "Enter") {
+		console.log("ENTER detected");
 		searchGames();
 	}
 });
@@ -40,13 +47,16 @@ function displayGames(games) { //	Display list of games in results section
 
 	let html = "";
 
-	games.forEach(game => {
+	games.forEach(game => { //	For each game, create a card with image, name, rating, release date, and a remove button if in favorites view
 		html += `
       <div class="game-card" data-id="${game.id}">
         <img src="${game.background_image || 'https://via.placeholder.com/200'}" />
         <h3>${game.name}</h3>
         <p>⭐ ${game.rating}</p>
         <p>📅 ${game.released}</p>
+								${isFavoritesView ? `<div class="remove-container">
+      <button class="remove-btn" data-id="${game.id}">❌ Remove</button> 
+      </div>` : ""}
       </div>
     `;
 	});
@@ -62,6 +72,18 @@ function displayGames(games) { //	Display list of games in results section
 
 		});
 	});
+
+	const removeButtons = document.querySelectorAll(".remove-btn");
+
+	removeButtons.forEach(btn => {
+		btn.addEventListener("click", (e) => {
+			e.stopPropagation(); //	Prevent card click event when clicking remove button
+
+			const id = btn.getAttribute("data-id");
+			removeFromFavorites(id);
+		});
+	});
+
 }
 
 async function getGameDetails(id) {
@@ -80,31 +102,46 @@ async function getGameDetails(id) {
 async function showGameDetails(game) { // Display detailed info about the game
 	const videoId = await getTrailer(game.name); //	Get YouTube trailer ID for the game
 
-	results.innerHTML = ` 
-    <div class="game-detail"> 
+	const detail = document.getElementById("gameDetail");
+
+	// Hide results and home sections when showing details
+	results.style.display = "none";
+
+	// Show details section and populate with game info and trailer
+	detail.style.display = "flex";
+
+	detail.innerHTML = `
+    <div class="game-detail">
       <h2>${game.name}</h2>
+
       <img src="${game.background_image}" />
+
       <p><strong>Rating:</strong> ${game.rating}</p>
       <p><strong>Released:</strong> ${game.released}</p>
+
       <p>${game.description_raw?.slice(0, 300)}...</p>
 
-						${videoId  //	If trailer found, embed it; otherwise show message
+      ${videoId
 			? `<iframe width="100%" height="300" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`
 			: "<p>No trailer found</p>"
 		}
 
-						<button id="favBtn">❤️ Add to Favorites</button>
+      <button id="favBtn">❤️ Add to Favorites</button>
       <button id="backBtn">⬅ Back</button>
     </div>
   `;
 
 	document.getElementById("backBtn").addEventListener("click", () => {
-		displayGames(lastGames); //come back to the last search results
+		detail.innerHTML = "";
+		detail.style.display = "none"; //	Hide details section
+		results.style.display = "grid"; //	Show results section again
 	});
 	document.getElementById("favBtn").addEventListener("click", () => {
 		addToFavorites(game); // Add to favorites function (to be implemented)
 	});
 }
+
+showFavsBtn.addEventListener("click", showFavorites);
 
 function addToFavorites(game) {
 	let favorites = JSON.parse(localStorage.getItem("favorites")) || []; //	Get existing favorites or initialize empty array
@@ -121,6 +158,13 @@ function addToFavorites(game) {
 
 function showFavorites() {
 	const favorites = JSON.parse(localStorage.getItem("favorites")) || []; //	Get favorites from localStorage
+	const detail = document.getElementById("gameDetail");
+
+	isFavoritesView = true; //	Set flag to indicate we are in favorites view
+
+	detail.innerHTML = ""; //	Clear any existing details content
+	detail.style.display = "none"; //	Hide details section if it was open
+	results.style.display = "grid"; //	Show results section to display favorites
 
 	if (favorites.length === 0) { //	If no favorites, show message
 		results.innerHTML = "<p>No favorites yet</p>";
@@ -142,4 +186,14 @@ async function getTrailer(gameName) {
 	} catch (error) {
 		console.error("Error:", error);
 	}
+}
+
+function removeFromFavorites(id) { //	Remove game from favorites by ID
+	let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+
+	favorites = favorites.filter(game => game.id != id);
+
+	localStorage.setItem("favorites", JSON.stringify(favorites));
+
+	showFavorites(); // recargar vista
 }
