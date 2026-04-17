@@ -38,7 +38,7 @@ Video Game Finder is a web application that allows users to search for video gam
 
 ## 🌐 Live Demo
 
-👉 classy-malabi-9630ff.netlify.app
+👉 classy-malabi-9630ff.netlify.app 
 
 ---
 
