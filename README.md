@@ -1,10 +1,6 @@
 # 🎮 Video Game Finder
 
-Video Game Finder is a web application that allows users to search for video games, 
-explore detailed information, watch trailers, and manage a list of favorite games.
-
-This project demonstrates the use of modern web development techniques, 
-including API integration, dynamic content rendering, and client-side data storage.
+Video Game Finder is a web application that allows users to search for video games, explore detailed information, watch trailers, and manage a list of favorite games. This project demonstrates the use of modern web development techniques, including API integration, dynamic content rendering, and client-side data storage.
 
 ---
 
